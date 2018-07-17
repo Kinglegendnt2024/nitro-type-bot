@@ -4,7 +4,6 @@ import numpy as np
 import cv2
 from mss import mss
 from PIL import Image
-import keyboard
 import pyautogui
 import time
 
@@ -13,10 +12,10 @@ import time
 screen_shot = mss()
 
 # portion of screen shot
-mon = {"top": 710, "left": 470, "width": 500, "height": 120}
+mon = {"top": 725, "left": 410, "width": 620, "height": 145}
 
 
-def take_screenshot():
+def take_screenshot(mon={"top": 725, "left": 410, "width": 620, "height": 145}):
     screen_shot.get_pixels(mon)
     img = Image.frombytes("RGB", (screen_shot.width, screen_shot.height), screen_shot.image)
 
@@ -38,7 +37,15 @@ common_typos = [("\n"," "),
                 ("@", ""),
                 ("¥", ""),
                 ("\"men", "When"),
-                ("\"hen", "When") ]
+                ("\"hen", "When"),
+                ("1arge", "large"),
+                ("smalle", "smaller"),
+                ("‘", "."),
+                ("—",""),
+                ("(ech","tech"),
+                ("c(i", "cti"),
+                ("(hey", "they"),
+                ("Bux", "But")]
 
 
 def clean_typos(text):
@@ -48,11 +55,25 @@ def clean_typos(text):
 
     return cleaned_text
 
-keyboard.on_press_key("escape", lambda _: exit(), suppress=False)
+
+debug_file = open("debug_file.txt", "a")
 
 
-for _ in range(5):
-    time.sleep(1.5)
+
+
+input("Press enter to start")
+time.sleep(2)
+while(True):
+
+    pyautogui.press(".")
+    pyautogui.press(",")
+    pyautogui.press("\'")
+    pyautogui.press(" ")
+    pyautogui.press("t")
+    pyautogui.press("T")
+    pyautogui.press("enter")
+
+
 
     cv2.imwrite("picture.png", take_screenshot())
 
@@ -65,8 +86,7 @@ for _ in range(5):
     type_out = clean_typos(type_out)
 
 
+    delay = set_delay()
+    pyautogui.typewrite(type_out, interval=0.09)
 
-    pyautogui.typewrite(type_out, interval=0.0001)
-
-
-    print("\n" + str(type_out))
+    debug_file.write("\n" + type_out)
