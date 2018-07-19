@@ -6,16 +6,18 @@ from mss import mss
 from PIL import Image
 import pyautogui
 import time
+from autocorrect import spell
+import string
+
 
 
 
 screen_shot = mss()
 
 # portion of screen shot
-mon = {"top": 725, "left": 410, "width": 620, "height": 145}
 
 
-def take_screenshot(mon={"top": 725, "left": 410, "width": 620, "height": 145}):
+def take_screenshot(mon={"top": 720, "left": 410, "width": 620, "height": 145}):
     screen_shot.get_pixels(mon)
     img = Image.frombytes("RGB", (screen_shot.width, screen_shot.height), screen_shot.image)
 
@@ -40,12 +42,22 @@ common_typos = [("\n"," "),
                 ("\"hen", "When"),
                 ("1arge", "large"),
                 ("smalle", "smaller"),
-                ("‘", "."),
                 ("—",""),
                 ("(ech","tech"),
                 ("c(i", "cti"),
                 ("(hey", "they"),
-                ("Bux", "But")]
+                ("Bux", "But"),
+                ("Khe", "the"),
+                ("zou", "you"),
+                ("nox", "not"),
+                ("oxher", "other"),
+                ("resx", "rest"),
+                ("targex", "target"),
+                ("exgerience", "experience"),
+                ("outpux", "output"),
+                ("ax", "at"),
+                ("haul", "hour"),
+                ("czclone", "cyclone")]
 
 
 def clean_typos(text):
@@ -59,19 +71,41 @@ def clean_typos(text):
 debug_file = open("debug_file.txt", "a")
 
 
+# spell checks each word (except for contractions) and preserves punctuation
+
+def spell_check(str):
+    str_list = str.split()
+    result_list = []
+
+    for word in str_list:
+        if word.find("'") == -1 and word.find("‘") == -1:
+            if word[-1] == "." or word[-1] == ",":
+                result_list.append(spell(word[:-1]) + word[-1])
+            else:
+                result_list.append(spell(word))
+        else:
+            result_list.append(word)
+    return " ".join(result_list)
 
 
 input("Press enter to start")
 time.sleep(2)
-while(True):
 
-    pyautogui.press(".")
-    pyautogui.press(",")
-    pyautogui.press("\'")
-    pyautogui.press(" ")
-    pyautogui.press("t")
-    pyautogui.press("T")
-    pyautogui.press("enter")
+
+iter = 0
+prev_text = ""
+speed = 0.051
+while(True):
+    iter += 1
+
+    if iter == 6:
+        pyautogui.press("enter")
+        time.sleep(2)
+        pyautogui.scroll(300)
+        pyautogui.scroll(-8)
+        iter = 0
+
+
 
 
 
@@ -85,8 +119,19 @@ while(True):
 
     type_out = clean_typos(type_out)
 
+    print("\n\n" + type_out)
 
-    delay = set_delay()
-    pyautogui.typewrite(type_out, interval=0.09)
+    if type_out == prev_text and speed > 0.01:
+        speed -= 0.02
+    prev_text = type_out[:]
+    pyautogui.typewrite(type_out, interval=speed)
+    for str in (string.ascii_lowercase + string.ascii_uppercase):
+        pyautogui.press(str)
+    pyautogui.press(".")
+    pyautogui.press(",")
+    pyautogui.press("'")
+    pyautogui.press("‘")
+    pyautogui.press(" ")
+
 
     debug_file.write("\n" + type_out)
