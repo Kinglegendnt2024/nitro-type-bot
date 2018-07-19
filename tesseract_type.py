@@ -24,7 +24,6 @@ def take_screenshot(mon={"top": 720, "left": 410, "width": 620, "height": 145}):
     img = np.array(img)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-    #img = cv2.resize(img, None, fx = 2, fy = 2, interpolation = cv2.INTER_CUBIC)
 
 
 
