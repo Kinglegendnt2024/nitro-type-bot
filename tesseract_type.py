@@ -17,7 +17,7 @@ screen_shot = mss()
 # portion of screen shot
 
 
-def take_screenshot(mon={"top": 720, "left": 410, "width": 620, "height": 145}):
+def return_screenshot(mon={"top": 720, "left": 410, "width": 620, "height": 145}):
     screen_shot.get_pixels(mon)
     img = Image.frombytes("RGB", (screen_shot.width, screen_shot.height), screen_shot.image)
 
@@ -67,7 +67,7 @@ def clean_typos(text):
     return cleaned_text
 
 
-debug_file = open("debug_file.txt", "a")
+
 
 
 # spell checks each word (except for contractions) and preserves punctuation
@@ -92,15 +92,18 @@ time.sleep(2)
 
 
 iter = 0
-prev_text = ""
-speed = 0.051
+
+
+speed = 0.081
+
 while(True):
     iter += 1
 
     if iter == 6:
         pyautogui.press("enter")
-        time.sleep(2)
+        time.sleep(20)
         pyautogui.scroll(300)
+        time.sleep(0.1)
         pyautogui.scroll(-8)
         iter = 0
 
@@ -108,7 +111,7 @@ while(True):
 
 
 
-    cv2.imwrite("picture.png", take_screenshot())
+    cv2.imwrite("picture.png", return_screenshot())
 
     call(["tesseract", "picture.png", "read_this", "--psm 6"])
 
@@ -120,17 +123,11 @@ while(True):
 
     print("\n\n" + type_out)
 
-    if type_out == prev_text and speed > 0.01:
-        speed -= 0.02
-    prev_text = type_out[:]
+
     pyautogui.typewrite(type_out, interval=speed)
-    for str in (string.ascii_lowercase + string.ascii_uppercase):
-        pyautogui.press(str)
-    pyautogui.press(".")
-    pyautogui.press(",")
-    pyautogui.press("'")
-    pyautogui.press("‘")
-    pyautogui.press(" ")
+    pyautogui.typewrite(string.ascii_lowercase + string.ascii_uppercase)
+    pyautogui.typewrite(".,'‘ ")
 
 
-    debug_file.write("\n" + type_out)
+    with open("debug_file.txt", "a") as file:
+        file.write("\n" + type_out)
