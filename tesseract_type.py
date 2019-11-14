@@ -1,34 +1,23 @@
 # with obj recognition
-from subprocess import call
-import numpy as np
-import cv2
-from mss import mss
-from PIL import Image
-import pyautogui
-import time
 from autocorrect import spell
+from subprocess import call
+from PIL import Image
+from mss import mss
+import numpy as np
+import pyautogui
 import string
-
-
-
+import time
+import cv2
 
 screen_shot = mss()
 
-# portion of screen shot
-
-
+# crop screenshot of screen so it is only the textbox of nitrotype
 def return_screenshot(mon={"top": 720, "left": 410, "width": 620, "height": 145}):
     screen_shot.get_pixels(mon)
     img = Image.frombytes("RGB", (screen_shot.width, screen_shot.height), screen_shot.image)
-
     img = np.array(img)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-
-
-
     return img
-
 
 common_typos = [("\n"," "),
                 ("frmn", "from"),
@@ -58,7 +47,6 @@ common_typos = [("\n"," "),
                 ("haul", "hour"),
                 ("czclone", "cyclone")]
 
-
 def clean_typos(text):
     cleaned_text = text
     for pair in common_typos:
@@ -66,12 +54,7 @@ def clean_typos(text):
 
     return cleaned_text
 
-
-
-
-
-# spell checks each word (except for contractions) and preserves punctuation
-
+# spell checks each word (except for contractions) using the spell check module and preserves punctuation
 def spell_check(str):
     str_list = str.split()
     result_list = []
@@ -89,12 +72,8 @@ def spell_check(str):
 
 input("Press enter to start")
 time.sleep(2)
-
-
+SPEED = 0.081 # how fast the letters are typed
 iter = 0
-
-
-speed = 0.081
 
 while(True):
     iter += 1
@@ -107,15 +86,13 @@ while(True):
         pyautogui.scroll(-8)
         iter = 0
 
-
-
-
-
+    # write out the screenshot of the text box
     cv2.imwrite("picture.png", return_screenshot())
 
+    # bash call for tessract to analyze image
     call(["tesseract", "picture.png", "read_this", "--psm 6"])
 
-
+    # read analyzed picture-text back in 
     with open("read_this.txt", "r") as file:
         type_out = file.read()
 
@@ -123,11 +100,12 @@ while(True):
 
     print("\n\n" + type_out)
 
-
-    pyautogui.typewrite(type_out, interval=speed)
+    # type the text into the game
+    pyautogui.typewrite(type_out, interval=SPEED)
+    # type random characters to account for messing up.
     pyautogui.typewrite(string.ascii_lowercase + string.ascii_uppercase)
     pyautogui.typewrite(".,'‘ ")
 
-
+    # keeping a log of what tesseract outputs.
     with open("debug_file.txt", "a") as file:
         file.write("\n" + type_out)
