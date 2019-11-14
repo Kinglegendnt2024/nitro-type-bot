@@ -3,7 +3,7 @@ Created a bot to play nitro type using tesseract OCR
 Requires tesseract-ocr installed
 
 
-
+![NitroType screen](./example.png)
 
 The file brute_force.py was an early control group-style of attempt at doing nitro type. The hope was that it would spam all
 the keys required quick enough to actually get through the text but the game requires accuracy to be above 50% after the first
